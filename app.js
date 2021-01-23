@@ -1,10 +1,6 @@
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-
-var game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT, Phaser.AUTO, '', {preload:preload, create:create, update:update});
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload:preload, create:create, update:update});
 var score = 0;
 var life = 3;
-var enemyCounter = 0;
 
 function preload(){
   game.load.image('sky', 'assets/sky.png');
@@ -12,18 +8,6 @@ function preload(){
   game.load.image('star', 'assets/star.png');
   game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
   game.load.spritesheet('baddie', 'assets/baddie.png', 32, 32);
-}
-
-function createEnemy(){
-  var enemy = enemies.create(760, 20, "baddie");
-  enemy.animations.add("left", [0, 1], 10, true);
-  enemy.animations.add("right", [2, 3], 10, true);
-  game.physics.arcade.enable(enemy);
-  enemy.body.bounce.y = 0.2;
-  enemy.body.gravity.y = 500;
-  enemy.body.collideWorldBounds = true;
-  enemyCounter += 1;
-  return
 }
 
 function create(){
@@ -66,9 +50,13 @@ function create(){
   player.body.gravity.y = 300;
   player.body.collideWorldBounds = true;
 
-  enemies = game.add.physicsGroup();
-  enemies.enableBody = true;
-  createEnemy()
+  enemy1 = game.add.sprite(760, 20, "baddie");
+  enemy1.animations.add("left", [0, 1], 10, true);
+  enemy1.animations.add("right", [2, 3], 10, true);
+  game.physics.arcade.enable(enemy1);
+  enemy1.body.bounce.y = 0.2;
+  enemy1.body.gravity.y = 500;
+  enemy1.body.collideWorldBounds = true;
 
   stars = game.add.physicsGroup();
   stars.enableBody = true;
@@ -82,13 +70,12 @@ function create(){
   wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
   aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
   dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
-  spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
 function update(){
   game.physics.arcade.collide(player, platforms);
   game.physics.arcade.collide(stars, platforms);
-  game.physics.arcade.collide(enemies, platforms);
+  game.physics.arcade.collide(enemy1, platforms);
 
   player.body.velocity.x = 0;
 
@@ -104,12 +91,12 @@ function update(){
     player.animations.stop();
   }
 
-  if((cursors.up.isDown || wKey.isDown || spaceKey.isDown) && player.body.touching.down){
+  if((cursors.up.isDown || wKey.isDown) && player.body.touching.down){
     player.body.velocity.y = -300;
   }
 
   game.physics.arcade.overlap(player, stars, collectStar);
-  game.physics.arcade.overlap(player, enemies, loseLife);
+  game.physics.arcade.overlap(player, enemy1, loseLife);
 
   moveEnemy();
 
@@ -120,9 +107,6 @@ function update(){
   function collectStar(player, star){
     score += 1;
     scoretext.setText(score);
-    for (var i = 0; i < Math.floor(score / 10) ; i++){
-      createEnemy();
-    }
     star.kill();
     star.reset(Math.floor(Math.random()*750), 0);
   }
@@ -135,13 +119,13 @@ function update(){
   }
 
   function moveEnemy(){
-    if(enemies.x > 759){
-      enemies.animations.play("left");
-      enemies.body.velocity.x = -120;
+    if(enemy1.x > 759){
+      enemy1.animations.play("left");
+      enemy1.body.velocity.x = -120;
     }
-    else if(enemies.x < 405){
-      enemies.animations.play("right");
-      enemies.body.velocity.x = 120;
+    else if(enemy1.x < 405){
+      enemy1.animations.play("right");
+      enemy1.body.velocity.x = 120;
     }
   }
 
