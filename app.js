@@ -124,7 +124,7 @@ function update(){
       enemy1.body.velocity.x = -120;
     }
     else if(enemy1.x < 405){
-      enemy1.animation.play("right");
+      enemy1.animations.play("right");
       enemy1.body.velocity.x = 120;
     }
   }
