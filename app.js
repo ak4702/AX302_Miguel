@@ -1,6 +1,7 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload:preload, create:create, update:update});
 var score = 0;
 var life = 3;
+var health_box_requirement = 10
 
 function preload(){
   game.load.image('sky', 'assets/sky.png');
@@ -113,10 +114,11 @@ function update(){
 
   function collectStar(player, star){
     score += 1;
-    if(score % 10 == 0){
+    if(score % health_box_requirement == 1){
       health = healths.create(Math.floor(Math.random()*750), 0, 'health');
       health.body.gravity.y = 200;
       health.body.bounce.y = 0.2;
+      health_box_requirement *= 2
     }
     scoretext.setText(score);
     star.kill();
